@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-const Restaurant = require('./models/Restaurant');
-const Menu = require('./models/Menu');
-const Order = require('./models/Order');
+const Restaurant = require('./models/restaurant');
+const Menu = require('./models/menu');
+const Order = require('./models/order');
 
 const app = express();
 
