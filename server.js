@@ -36,7 +36,15 @@ app.get('/api/menu/:restaurantId', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
+// API cho Admin lấy danh sách đơn hàng của quán
+app.get('/api/orders/:restaurantId', async (req, res) => {
+    try {
+        const orders = await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // 2. Thêm món mới
 app.post('/api/menu', async (req, res) => {
   try {
