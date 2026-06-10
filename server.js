@@ -37,20 +37,13 @@ app.get('/api/menu/:restaurantId', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-// API cho Admin lấy danh sách đơn hàng của quán
-app.get('/api/orders/:restaurantId', async (req, res) => {
-    try {
-        const orders = await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 });
-        res.json(orders);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-// 2. Thêm món mới
+
+// 2. Thêm món mới (ĐÃ SỬA: Cập nhật imageUrl)
 app.post('/api/menu', async (req, res) => {
   try {
-    const { restaurantId, itemName, price, isAvailable } = req.body;
-    const monMoi = new Menu({ restaurantId, itemName, price, isAvailable });
+    // Đã thêm imageUrl vào đây để server nhận ảnh từ Frontend
+    const { restaurantId, itemName, price, imageUrl, isAvailable } = req.body;
+    const monMoi = new Menu({ restaurantId, itemName, price, imageUrl, isAvailable });
     await monMoi.save();
     res.status(201).json({ success: true, message: "Đã thêm món ăn!", data: monMoi });
   } catch (err) {
@@ -63,26 +56,13 @@ app.put('/api/menu/:itemId', async (req, res) => {
   try {
     const idMonAn = req.params.itemId;
     const duLieuMoi = req.body;
-    // Đã thay đổi cú pháp để fix cảnh báo Warning màu vàng
     const monDaCapNhat = await Menu.findByIdAndUpdate(idMonAn, duLieuMoi, { returnDocument: 'after' });
     res.json({ success: true, message: "Đã cập nhật!", data: monDaCapNhat });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-// API để cập nhật trạng thái đơn hàng thành 'completed'
-app.put('/api/orders/:orderId', async (req, res) => {
-    try {
-        const updatedOrder = await Order.findByIdAndUpdate(
-            req.params.orderId, 
-            { status: 'completed' }, 
-            { new: true }
-        );
-        res.json(updatedOrder);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+
 // 4. Xóa món ăn
 app.delete('/api/menu/:itemId', async (req, res) => {
   try {
@@ -110,15 +90,28 @@ app.post('/api/order', async (req, res) => {
   }
 });
 
-// Chủ quán xem danh sách đơn
+// Chủ quán xem danh sách đơn (Đã xóa bỏ API trùng lặp)
 app.get('/api/orders/:restaurantId', async (req, res) => {
-  try {
-    const idCuaQuan = req.params.restaurantId;
-    const danhSachDon = await Order.find({ restaurantId: idCuaQuan }).sort({ createdAt: -1 });
-    res.json({ success: true, data: danhSachDon });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
+    try {
+        const orders = await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Chủ quán cập nhật trạng thái đơn hàng (Hoàn thành)
+app.put('/api/orders/:orderId', async (req, res) => {
+    try {
+        const updatedOrder = await Order.findByIdAndUpdate(
+            req.params.orderId, 
+            { status: 'completed' }, 
+            { new: true }
+        );
+        res.json(updatedOrder);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Khởi chạy server
