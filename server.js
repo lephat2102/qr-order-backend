@@ -69,7 +69,19 @@ app.put('/api/menu/:itemId', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
+// API để cập nhật trạng thái đơn hàng thành 'completed'
+app.put('/api/orders/:orderId', async (req, res) => {
+    try {
+        const updatedOrder = await Order.findByIdAndUpdate(
+            req.params.orderId, 
+            { status: 'completed' }, 
+            { new: true }
+        );
+        res.json(updatedOrder);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // 4. Xóa món ăn
 app.delete('/api/menu/:itemId', async (req, res) => {
   try {
