@@ -8,6 +8,8 @@ const menuSchema = new mongoose.Schema({
   },
   itemName: { type: String, required: true },
   price: { type: Number, required: true },
+  // 👇 ĐÂY LÀ DÒNG QUAN TRỌNG NHẤT VỪA ĐƯỢC THÊM VÀO 👇
+  imageUrl: { type: String, default: '' }, 
   isAvailable: { type: Boolean, default: true }
 }, { timestamps: true });
 
